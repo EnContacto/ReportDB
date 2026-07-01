@@ -1,26 +1,18 @@
-﻿<#
-.SYNOPSIS
-    Validación Multi-BD con Docker - Versión Corregida
-.DESCRIPTION
-    Soporta dos modos:
-    - Diario: Validación rápida con dbatools
-    - Semanal/Manual: Validación completa con Docker
-#>
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$ConfigPath = "C:\BackupValidation\config.json",
     [string]$TargetDB = "",
     [switch]$ForceDocker  # Nuevo parámetro para forzar Docker
 )
 
-# Suprimir salida a consola
+
 $ProgressPreference = 'SilentlyContinue'
 $VerbosePreference = 'SilentlyContinue'
 $WarningPreference = 'SilentlyContinue'
 $InformationPreference = 'SilentlyContinue'
 $ErrorActionPreference = 'Continue'
 
-# Determinar si es domingo (día de validación completa)
+
 $isSunday = (Get-Date).DayOfWeek -eq 'Sunday'
 $useDocker = $ForceDocker -or $isSunday
 
@@ -67,7 +59,7 @@ function Get-SHA256Hash {
     catch { return "ERROR_HASH" }
 }
 
-# Inicialización
+
 try {
     $env:PSModulePath += ";$env:USERPROFILE\Documents\WindowsPowerShell\Modules"
     Import-Module dbatools -ErrorAction Stop
@@ -109,7 +101,7 @@ if ($databasesToProcess.Count -eq 0) {
     exit 1
 }
 
-# Procesar cada base de datos
+
 $allDbResults = @{}
 foreach ($db in $databasesToProcess) {
     $dbName = $db.name
@@ -123,7 +115,7 @@ foreach ($db in $databasesToProcess) {
     
     New-Item -ItemType Directory -Force -Path $resultsPath | Out-Null
     
-    # Inicializar métricas
+
     $metrics = @{
         Total            = 0
         Success          = 0
